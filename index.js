@@ -24,13 +24,26 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+const toTimeStamp = (date) => date.getTime();
+const toUtcFormat = (date) => date.toUTCString();
+
+app.get("/api/", (req, res) => {
+  let date = new Date();
+
+  res.json({
+    unix: toTimeStamp(date),
+    utc: toUtcFormat(date)
+  });
+
+});
+
 app.get("/api/:date", (req, res) => {
 
   const isUnixFormat = (date) => /^\d+$/.test(date);
   let date;
 
   if(isUnixFormat(req.params.date)){
-    date = new Date(Number(req.params.date));
+    date = new Date(+req.params.date);
 
   }else{
       date = new Date(req.params.date);
@@ -41,8 +54,6 @@ app.get("/api/:date", (req, res) => {
       error: "Invalid Date"
     })
   }
-  const toTimeStamp = (date) => date.getTime();
-  const toUtcFormat = (date) => date.toUTCString();
 
   res.json({
     unix: toTimeStamp(date),
@@ -50,8 +61,6 @@ app.get("/api/:date", (req, res) => {
   });
 
 })
-
-
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
